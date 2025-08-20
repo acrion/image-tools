@@ -1,0 +1,43 @@
+--- PKGBUILD
++++ PKGBUILD
+@@ -49,4 +49,3 @@
+ provides=(libmagick)
+-makedepends=(chrpath
+-             djvulibre
++makedepends=(djvulibre
+              ghostscript
+@@ -80,4 +79,9 @@
+     --sysconfdir=/etc \
+-    --enable-shared \
+     --disable-static \
++    --enable-shared \
++    --with-quantum-depth=32 \
++    --with-utilities=no \
++    --disable-docs \
++    --with-modules=no \
++    --disable-dependency-tracking \
+     --with-dejavu-font-dir=/usr/share/fonts/TTF \
+@@ -87,3 +91,3 @@
+     PCLDelegate=/usr/bin/gpcl6 \
+-    --enable-hdri \
++    --disable-hdri \
+     --enable-opencl \
+@@ -94,7 +98,5 @@
+     --with-lqr \
+-    --with-modules \
+     --with-openexr \
+     --with-openjp2 \
+-    --with-perl \
+-    --with-perl-options='INSTALLDIRS=vendor INSTALL_BASE=' \
++    --without-perl \
+     --with-rsvg \
+@@ -122,8 +124,3 @@
+   make DESTDIR="$pkgdir" install
+-
+-  find "$pkgdir/usr/lib/perl5" -name '*.so' -exec chrpath -d {} +
+-  rm "$pkgdir"/etc/$_relname/type-{apple,urw-base35,windows}.xml
+-  rm "$pkgdir"/usr/lib/*.la
+-
+-  install -Dm644 LICENSE NOTICE -t "$pkgdir"/usr/share/licenses/$pkgname
++  install -Dm644 LICENSE NOTICE -t "$pkgdir/usr/share/licenses/$pkgname"
+ }

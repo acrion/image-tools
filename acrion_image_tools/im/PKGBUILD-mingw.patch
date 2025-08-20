@@ -1,0 +1,75 @@
+--- PKGBUILD
++++ PKGBUILD
+@@ -4,4 +4,3 @@
+ pkgbase="mingw-w64-${_realname}"
+-pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}"
+-         "${MINGW_PACKAGE_PREFIX}-${_realname}-docs")
++pkgname="${MINGW_PACKAGE_PREFIX}-${_realname}"
+ _basever=7.1.2
+@@ -12,3 +11,3 @@
+ arch=('any')
+-mingw_arch=('mingw64' 'ucrt64' 'clang64' 'clangarm64')
++mingw_arch=('ucrt64')
+ url="https://www.imagemagick.org/"
+@@ -125,3 +124,9 @@
+     --enable-legacy-support \
+-    --enable-hdri \
++    --disable-static \
++    --enable-shared \
++    --with-quantum-depth=32 \
++    --with-utilities=no \
++    --disable-docs \
++    --disable-dependency-tracking \
++    --disable-hdri \
+     --with-djvu \
+@@ -164,47 +169,5 @@
+ 
+-package_imagemagick() {
+-  cd "${srcdir}"/build-${MSYSTEM}
+-  if check_option "debug" "y"; then
+-    MAKE_VERBOSE="V=1"
+-  fi
+-  make -j1 DESTDIR="${pkgdir}" install ${MAKE_VERBOSE}
+-
+-  #find . -name "*.xml" -exec sed -i "s/${MINGW_PREFIX}/newWord/g" '{}' \;
+-
+-  install -Dm644 "${srcdir}"/ImageMagick-${_basever}${_rc}/LICENSE "${pkgdir}${MINGW_PREFIX}/share/licenses/${_realname}/LICENSE"
+-  install -Dm644 "${srcdir}"/ImageMagick-${_basever}${_rc}/NOTICE  "${pkgdir}${MINGW_PREFIX}/share/licenses/${_realname}/NOTICE"
+-
+-  local PREFIX_WIN=$(cygpath -wm ${MINGW_PREFIX})
+-  # fix hard-coded pathes in XML files.
+-  find "${pkgdir}"${MINGW_PREFIX}/lib -name "*.xml" -exec sed -e "s|${PREFIX_WIN}|${MINGW_PREFIX}|g" -i {} \;
+-  # fix libtool .la files
+-  find "${pkgdir}"${MINGW_PREFIX}/lib -name "*.la" -exec sed -e "s|${PREFIX_WIN}|${MINGW_PREFIX}|g" -i {} \;
+-  # fix hard-coded pathes in .pc files
+-  for _f in "${pkgdir}${MINGW_PREFIX}"\/lib\/pkgconfig\/*.pc; do
+-    sed -e "s|${PREFIX_WIN}|${MINGW_PREFIX}|g" -i ${_f}
+-  done
+-
+-  # Split docs
+-  mkdir -p dest${MINGW_PREFIX}/share
+-  mv "${pkgdir}${MINGW_PREFIX}"/share/doc dest${MINGW_PREFIX}/share/doc
+-}
+-
+-package_imagemagick-docs() {
+-  pkgdesc+=" (documentation)"
+-  depends=()
+-  optdepends=()
+-
+-  cd "${srcdir}"/build-${MSYSTEM}
+-  mv dest/* "${pkgdir}"
++package() {
++  cd "${srcdir}/build-${MSYSTEM}"
++  make DESTDIR="${pkgdir}" install
+ }
+-
+-# template start; name=mingw-w64-splitpkg-wrappers; version=1.0;
+-# vim: set ft=bash :
+-
+-# generate wrappers
+-for _name in "${pkgname[@]}"; do
+-  _short="package_${_name#${MINGW_PACKAGE_PREFIX}-}"
+-  _func="$(declare -f "${_short}")"
+-  eval "${_func/#${_short}/package_${_name}}"
+-done
+-# template end;

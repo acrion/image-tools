@@ -1,0 +1,9 @@
+displayName = "acrion image tools"
+version = "@PROJECT_VERSION@"
+isFreeware = true
+description = "A set of essential tools for basic image manipulation."
+urlHelp = "https://github.com/acrion/image-tools"
+urlLicense = "https://github.com/acrion/image-tools/blob/main/LICENSE"
+urlDownloadLinux = "https://github.com/acrion/image-tools/releases/download/@PROJECT_VERSION@/image-tools-Linux.zip"
+urlDownloadWindows = "https://github.com/acrion/image-tools/releases/download/@PROJECT_VERSION@/image-tools-Windows.zip"
+#urlDownloadDarwin = "https://github.com/acrion/image-tools/releases/download/@PROJECT_VERSION@/image-tools-Darwin.zip"
