@@ -38,9 +38,8 @@ endif ()
 if (NOT TARGET acrion_image)
     FetchContent_Declare(
         acrion_image
-        # GIT_REPOSITORY https://github.com/acrion/image.git
-        GIT_REPOSITORY git@github.com:acrion/image_private.git # TODO
-        GIT_TAG master
+        GIT_REPOSITORY https://github.com/acrion/image.git
+        GIT_TAG main
         GIT_SHALLOW TRUE
     )
     FetchContent_MakeAvailable(acrion_image)
