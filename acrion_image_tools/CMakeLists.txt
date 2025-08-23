@@ -95,6 +95,28 @@ if (NOT EXISTS "${ImageMagickSuccessFlag}")
 
     if (WIN32)
         # --- Windows (MSYS2/UCRT64) Build ---
+        
+        # Find the bash executable, which must be in the PATH for this script to run.
+        # This gives us a reliable anchor inside the MSYS2 installation.
+        find_program(BASH_EXECUTABLE NAMES bash REQUIRED)
+
+        # From the location of bash.exe (e.g., C:/msys64/usr/bin/bash.exe),
+        # navigate up two directories to find the MSYS2 root.
+        get_filename_component(MSYS_USR_DIR ${BASH_EXECUTABLE} DIRECTORY)
+        get_filename_component(MSYS_ROOT_DIR ${MSYS_USR_DIR} DIRECTORY)
+
+        # Construct the full path to the shell command script.
+        set(MSYS2_SHELL_CMD "${MSYS_ROOT_DIR}/msys2_shell.cmd")
+
+        # Verify that the file actually exists before trying to use it.
+        if(NOT EXISTS "${MSYS2_SHELL_CMD}")
+            message(FATAL_ERROR "Could not find msys2_shell.cmd at expected location: ${MSYS2_SHELL_CMD}")
+        endif()
+        message(STATUS "Found MSYS2 shell launcher at: ${MSYS2_SHELL_CMD}")
+        # --- END: New Dynamic Path Detection ---
+
+        set(IM_BUILD_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/im/build_msys2.sh")
+
         set(IM_BUILD_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/im/build_msys2.sh")
         set(IM_SOURCE_DIR "${CMAKE_BINARY_DIR}/imagemagick-build-msys2")
         set(IM_STAGING_DIR "${IM_SOURCE_DIR}/mingw-w64-imagemagick/pkg/mingw-w64-ucrt-x86_64-imagemagick/ucrt64")
@@ -115,7 +137,7 @@ if (NOT EXISTS "${ImageMagickSuccessFlag}")
             USES_TERMINAL_BUILD    1
             USES_TERMINAL_INSTALL  1
 
-            BUILD_COMMAND C:/tools/msys64/msys2_shell.cmd -ucrt64 -defterm -no-start -here -c "bash --noprofile --norc ${IM_BUILD_SCRIPT}"
+            BUILD_COMMAND ${MSYS2_SHELL_CMD} -ucrt64 -defterm -no-start -here -c "bash --noprofile --norc ${IM_BUILD_SCRIPT}"
 
             # Copy the staged results from makepkg's staging dir to our final destination
             INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory "${IM_STAGING_DIR}" "${IMAGEMAGICK_INSTALL_DIR}"
