@@ -96,14 +96,19 @@ if (NOT EXISTS "${ImageMagickSuccessFlag}")
     if (WIN32)
         # --- Windows (MSYS2/UCRT64) Build ---
         
-        # Find the bash executable, which must be in the PATH for this script to run.
-        # This gives us a reliable anchor inside the MSYS2 installation.
+        # Find the bash executable, which must be in the PATH. This gives us a
+        # reliable anchor inside the MSYS2 installation directory structure.
         find_program(BASH_EXECUTABLE NAMES bash REQUIRED)
 
-        # From the location of bash.exe (e.g., C:/msys64/usr/bin/bash.exe),
-        # navigate up two directories to find the MSYS2 root.
-        get_filename_component(MSYS_USR_DIR ${BASH_EXECUTABLE} DIRECTORY)
-        get_filename_component(MSYS_ROOT_DIR ${MSYS_USR_DIR} DIRECTORY)
+        # From the full path to bash.exe (e.g., C:/msys64/usr/bin/bash.exe),
+        # get its containing directory.
+        get_filename_component(BASH_BIN_DIR ${BASH_EXECUTABLE} DIRECTORY) # -> C:/msys64/usr/bin
+
+        # From the bin directory, navigate up to the parent /usr directory.
+        get_filename_component(MSYS_USR_DIR ${BASH_BIN_DIR} DIRECTORY) # -> C:/msys64/usr
+
+        # And from the /usr directory, navigate up one more level to the MSYS2 root.
+        get_filename_component(MSYS_ROOT_DIR ${MSYS_USR_DIR} DIRECTORY) # -> C:/msys64
 
         # Construct the full path to the shell command script.
         set(MSYS2_SHELL_CMD "${MSYS_ROOT_DIR}/msys2_shell.cmd")
@@ -113,9 +118,6 @@ if (NOT EXISTS "${ImageMagickSuccessFlag}")
             message(FATAL_ERROR "Could not find msys2_shell.cmd at expected location: ${MSYS2_SHELL_CMD}")
         endif()
         message(STATUS "Found MSYS2 shell launcher at: ${MSYS2_SHELL_CMD}")
-        # --- END: New Dynamic Path Detection ---
-
-        set(IM_BUILD_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/im/build_msys2.sh")
 
         set(IM_BUILD_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/im/build_msys2.sh")
         set(IM_SOURCE_DIR "${CMAKE_BINARY_DIR}/imagemagick-build-msys2")
